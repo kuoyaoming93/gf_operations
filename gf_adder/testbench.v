@@ -6,6 +6,7 @@ module testbench;
     reg [31:0] a;
     reg [31:0] b;
     reg gf_option;
+    wire co;
 
     initial begin
         if ($test$plusargs("vcd")) begin
@@ -39,7 +40,8 @@ module testbench;
         .gf_option(gf_option),
         .a(a),
         .b(b),
-        .sum(sum)
+        .sum(sum),
+        .co(co)
     );
 
 endmodule

@@ -4,10 +4,13 @@ module gf_rca_adder #(
     input                       gf_option,
     input   [DATA_WIDTH-1:0]    a,
     input   [DATA_WIDTH-1:0]    b,
-    output  [DATA_WIDTH-1:0]    sum
+    output  [DATA_WIDTH-1:0]    sum,
+    output                      co
 );
 
     wire    [DATA_WIDTH-1:0] carry_array;
+
+    assign co = carry_array[DATA_WIDTH-1];
 
     /* Creo un half adder */
     gf_half_adder ha0 (
