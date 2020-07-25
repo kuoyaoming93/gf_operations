@@ -6,6 +6,7 @@ module testbench;
     wire [2*DATA_WIDTH-1:0] out;
     wire [2*DATA_WIDTH-1:0] out2;
     wire [2*DATA_WIDTH-1:0] out3;
+    wire [2*DATA_WIDTH-1:0] out4;
     reg [DATA_WIDTH-1:0] a;
     reg [DATA_WIDTH-1:0] b;
     reg option;
@@ -46,7 +47,8 @@ module testbench;
         .b(b),
         .out(out),
         .out2(out2),
-        .out3(out3)
+        .out3(out3),
+        .out4(out4)
     );
 
 endmodule
