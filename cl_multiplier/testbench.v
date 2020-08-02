@@ -39,7 +39,7 @@ module testbench;
     end
 
     top #(DATA_WIDTH) dut0(
-        .gf_option(option),
+        .carry_option(option),
         .a(a),
         .b(b),
         .out(out)

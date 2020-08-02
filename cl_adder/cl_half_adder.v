@@ -1,5 +1,5 @@
-module gf_half_adder(
-    input gf_option,
+module cl_half_adder(
+    input carry_option,
     input a,
     input b,
     output sum,
@@ -7,6 +7,6 @@ module gf_half_adder(
 );
 
 assign sum = a ^ b;
-assign co = gf_option ? a & b : 1'b0;
+assign co = carry_option ? a & b : 1'b0;
 
 endmodule

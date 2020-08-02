@@ -1,7 +1,7 @@
-module gf_rca_adder #(
+module cl_rca_adder #(
     parameter DATA_WIDTH = 32
 )(
-    input                       gf_option,
+    input                       carry_option,
     input   [DATA_WIDTH-1:0]    a,
     input   [DATA_WIDTH-1:0]    b,
     output  [DATA_WIDTH-1:0]    sum,
@@ -13,8 +13,8 @@ module gf_rca_adder #(
     assign co = carry_array[DATA_WIDTH-1];
 
     /* Creo un half adder */
-    gf_half_adder ha0 (
-        .gf_option(gf_option),
+    cl_half_adder ha0 (
+        .carry_option(carry_option),
         .a(a[0]), 
         .b(b[0]),
         .sum(sum[0]),
@@ -25,8 +25,8 @@ module gf_rca_adder #(
 	genvar i;
 	generate
 		for (i = 1; i < DATA_WIDTH; i = i + 1) begin
-            gf_full_adder fa0 (
-                .gf_option(gf_option),
+            cl_full_adder fa0 (
+                .carry_option(carry_option),
                 .a(a[i]), 
                 .b(b[i]),
                 .sum(sum[i]),

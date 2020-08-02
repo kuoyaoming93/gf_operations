@@ -10,7 +10,7 @@ VVP = vvp$(ICARUS_SUFFIX)
 all: testbench.vvp
 	$(VVP) -N $< +vcd
 
-testbench.vvp: testbench.v gf_rca_adder.v gf_full_adder.v gf_half_adder.v rca_adder.v full_adder.v half_adder.v gf_add.v top.v
+testbench.vvp: testbench.v cl_rca_adder.v cl_full_adder.v cl_half_adder.v rca_adder.v full_adder.v half_adder.v cl_add.v top.v
 	$(IVERILOG) -o $@  $^
 	chmod -x $@
 
