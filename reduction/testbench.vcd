@@ -1,0 +1,162 @@
+$date
+	Tue Aug  4 01:51:18 2020
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module testbench $end
+$var wire 4 ! out [3:0] $end
+$var reg 5 " polyn_red_in [4:0] $end
+$var reg 8 # reduc_in [7:0] $end
+$scope module dut0 $end
+$var wire 5 $ polyn_red_in [4:0] $end
+$var wire 8 % reduc_in [7:0] $end
+$var wire 4 & out [3:0] $end
+$scope module dut0 $end
+$var wire 4 ' out [3:0] $end
+$var wire 5 ( polyn_red [4:0] $end
+$var wire 5 ) polyn_red_in [4:0] $end
+$var wire 8 * reduc [7:0] $end
+$var wire 8 + reduc_in [7:0] $end
+$var wire 8 , reduc_in_n [7:0] $end
+$var wire 5 - polyn_red_in_n [4:0] $end
+$var wire 4 . partial_result [3:0] $end
+$var wire 4 / out_poly [3:0] $end
+$scope begin genblk1[0] $end
+$scope module adder0 $end
+$var wire 4 0 a [3:0] $end
+$var wire 4 1 b [3:0] $end
+$var wire 4 2 sum [3:0] $end
+$upscope $end
+$upscope $end
+$scope begin genblk1[1] $end
+$scope module adder0 $end
+$var wire 4 3 a [3:0] $end
+$var wire 4 4 b [3:0] $end
+$var wire 4 5 sum [3:0] $end
+$upscope $end
+$upscope $end
+$scope begin genblk1[2] $end
+$scope module adder0 $end
+$var wire 4 6 a [3:0] $end
+$var wire 4 7 b [3:0] $end
+$var wire 4 8 sum [3:0] $end
+$upscope $end
+$upscope $end
+$scope module bit_inv_poly_out $end
+$var wire 4 9 a [3:0] $end
+$var wire 4 : a_n [3:0] $end
+$scope begin genblk1[0] $end
+$upscope $end
+$scope begin genblk1[1] $end
+$upscope $end
+$scope begin genblk1[2] $end
+$upscope $end
+$scope begin genblk1[3] $end
+$upscope $end
+$upscope $end
+$scope module bit_inv_polym $end
+$var wire 5 ; a [4:0] $end
+$var wire 5 < a_n [4:0] $end
+$scope begin genblk1[0] $end
+$upscope $end
+$scope begin genblk1[1] $end
+$upscope $end
+$scope begin genblk1[2] $end
+$upscope $end
+$scope begin genblk1[3] $end
+$upscope $end
+$scope begin genblk1[4] $end
+$upscope $end
+$upscope $end
+$scope module bit_inv_reduc $end
+$var wire 8 = a [7:0] $end
+$var wire 8 > a_n [7:0] $end
+$scope begin genblk1[0] $end
+$upscope $end
+$scope begin genblk1[1] $end
+$upscope $end
+$scope begin genblk1[2] $end
+$upscope $end
+$scope begin genblk1[3] $end
+$upscope $end
+$scope begin genblk1[4] $end
+$upscope $end
+$scope begin genblk1[5] $end
+$upscope $end
+$scope begin genblk1[6] $end
+$upscope $end
+$scope begin genblk1[7] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+b0 >
+b0 =
+b0 <
+b0 ;
+b0 :
+b0 9
+b0 8
+b0 7
+b0 6
+b0 5
+b0 4
+b0 3
+b0 2
+b0 1
+b0 0
+b0 /
+b0z .
+b0 -
+b0 ,
+b0 +
+b0 *
+b0 )
+b0 (
+b0 '
+b0 &
+b0 %
+b0 $
+b0 #
+b0 "
+b0 !
+$end
+#10000
+b1001 7
+b101 !
+b101 &
+b101 '
+b101 /
+b101 :
+b1010 5
+b1010 9
+b1010 3
+b100 8
+b1001 1
+b0z .
+b1101 6
+b100 2
+b1101 0
+b1011010 *
+b1011010 ,
+b1011010 >
+b11001 (
+b11001 -
+b11001 <
+b1011010 #
+b1011010 %
+b1011010 +
+b1011010 =
+b10011 "
+b10011 $
+b10011 )
+b10011 ;
+#25000
