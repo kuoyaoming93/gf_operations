@@ -46,14 +46,11 @@ module reduction #(
     genvar j;
     generate
         for (j = 0; j < DATA_WIDTH-1; j = j + 1) begin
-            cl_add #(DATA_WIDTH) adder0(
-                .a(a_sum[j][0 +: DATA_WIDTH]),
-                .b(b_sum[j][0 +: DATA_WIDTH]),
-                .sum(partial_sum[j+1][0 +: DATA_WIDTH])
+            cl_add #(DATA_WIDTH+1) adder0(
+                .a(a_sum[j]),
+                .b(b_sum[j]),
+                .sum(partial_sum[j+1])
             );
-            // Suma adicional que necesita el polinomio de reduccion
-            assign partial_sum[j+1][DATA_WIDTH] = a_sum[j][DATA_WIDTH] ^ b_sum[j][DATA_WIDTH];
-
             assign partial_result[j+1] = partial_sum[j+1][0];
 
             // Asigno las entradas de las sumas parciales
