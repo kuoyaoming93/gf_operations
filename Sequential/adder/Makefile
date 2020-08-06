@@ -7,16 +7,22 @@ ICARUS_SUFFIX =
 IVERILOG = iverilog$(ICARUS_SUFFIX)
 VVP = vvp$(ICARUS_SUFFIX)
 
-all: testbench.vvp
+test: testbench.vvp
 	$(VVP) -N $< +vcd
 
-testbench.vvp: testbench.v rca_adder.v full_adder.v half_adder.v normal_adder.v top.v
+testbench.vvp: testbench.v rca_adder.v full_adder.v half_adder.v normal_adder.v 
 	$(IVERILOG) -o $@  $^
 	chmod -x $@
 
+top: top.vvp
+	$(VVP) -N $<
+
+top.vvp: rca_adder.v full_adder.v half_adder.v normal_adder.v ../utils/input_regs.v ../utils/output_regs.v top.v
+	$(IVERILOG) -o $@  $^
+	chmod -x $@
 
 clean:
-	rm -rf testbench.vvp testbench.vcd
+	rm -rf *.vvp *.vcd
 
 
-.PHONY: test clean
+.PHONY: test top clean

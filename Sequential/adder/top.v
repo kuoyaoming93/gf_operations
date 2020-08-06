@@ -3,13 +3,36 @@ module top #(
 ) (
     input clk,
     input resetn,
-    input dummy
+    input a,
+    input b,
+    output sum
 );
-    wire    [DATA_WIDTH-1:0]    in_sum_a;
-    wire    [DATA_WIDTH-1:0]    in_sum_b;
-    wire    [DATA_WIDTH-1:0]    out_sum_result;
+    wire [DATA_WIDTH-1:0] in_sum_a;
+    wire [DATA_WIDTH-1:0] in_sum_b;
+    wire [DATA_WIDTH-1:0] out_sum_result;
 
-    rca_adder dut0(
+    input_regs #(DATA_WIDTH) input0 (
+        .clk(clk),
+        .resetn(resetn),
+        .in_serial(a),
+        .out_parallel(in_sum_a)
+    );
+
+    input_regs #(DATA_WIDTH) input1 (
+        .clk(clk),
+        .resetn(resetn),
+        .in_serial(b),
+        .out_parallel(in_sum_b)
+    );
+
+    output_regs #(DATA_WIDTH) output0 (
+        .clk(clk),
+        .resetn(resetn),
+        .in_parallel(out_sum_result),
+        .out_serial(sum)
+    );
+
+    rca_adder #(DATA_WIDTH) dut0 (
         .clk(clk),
         .resetn(resetn),
         .in_sum_a(in_sum_a),
