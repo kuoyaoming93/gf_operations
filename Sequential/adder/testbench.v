@@ -46,13 +46,4 @@ module testbench;
         .out_sum_result(sum)
     );
 
-    function suma;
-        input a;
-        input b;
-
-        a = $urandom % (2**DATA_WIDTH-1);
-        b = $urandom % (2**DATA_WIDTH-1);
-        
-    endfunction
-
 endmodule

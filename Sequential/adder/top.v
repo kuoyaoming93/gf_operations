@@ -3,9 +3,11 @@ module top #(
 ) (
     input clk,
     input resetn,
+    input enable,
     input a,
     input b,
-    output sum
+    output sum,
+    output out_carry
 );
     wire [DATA_WIDTH-1:0] in_sum_a;
     wire [DATA_WIDTH-1:0] in_sum_b;
@@ -34,10 +36,11 @@ module top #(
 
     rca_adder #(DATA_WIDTH) dut0 (
         .clk(clk),
-        .resetn(resetn),
+        .enable(enable),
         .in_sum_a(in_sum_a),
         .in_sum_b(in_sum_b),
-        .out_sum_result(out_sum_result)
+        .out_sum_result(out_sum_result),
+        .out_carry(out_carry)
     );
 
 endmodule

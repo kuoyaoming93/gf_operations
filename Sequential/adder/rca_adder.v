@@ -2,7 +2,7 @@ module rca_adder #(
     parameter DATA_WIDTH = 32
 )(
     input                           clk,
-    input                           resetn,
+    input                           enable,
     input       [DATA_WIDTH-1:0]    in_sum_a,
     input       [DATA_WIDTH-1:0]    in_sum_b,
     output reg  [DATA_WIDTH-1:0]    out_sum_result,
@@ -20,7 +20,7 @@ module rca_adder #(
     /* Creo un half adder */
     half_adder ha0 (
         .a(in_sum_a[0]), 
-        .b(in_sum_a[0]),
+        .b(in_sum_b[0]),
         .sum(sum[0]),
         .co(carry_array[0])
     );
@@ -31,7 +31,7 @@ module rca_adder #(
 		for (i = 1; i < DATA_WIDTH; i = i + 1) begin
             full_adder fa0 (
                 .a(in_sum_a[i]), 
-                .b(in_sum_a[i]),
+                .b(in_sum_b[i]),
                 .sum(sum[i]),
                 .ci(carry_array[i-1]), 
                 .co(carry_array[i])
@@ -41,7 +41,7 @@ module rca_adder #(
 
     /* Registrar las salidas */
     always @(posedge clk) begin
-        if(!resetn) begin
+        if(!enable) begin
             out_sum_result  <= 0;
             out_carry       <= 0;
         end else begin 
