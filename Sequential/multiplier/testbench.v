@@ -4,14 +4,16 @@ module testbench;
 
     parameter DATA_WIDTH = 32;
     parameter CYCLE = 5.2;
+    parameter NUMBER_TESTS = 50;
     
-    wire    [DATA_WIDTH-1:0]  sum;
-    wire                      carry;
-    reg     [DATA_WIDTH-1:0]  a;
-    reg     [DATA_WIDTH-1:0]  b;
-    reg                       clk,enable;
+    wire    [2*DATA_WIDTH-1:0]      mult_result;
+    reg     [DATA_WIDTH-1:0]        a;
+    reg     [DATA_WIDTH-1:0]        b;
+    reg                             clk,enable;
 
     integer i;
+    integer counter;
+    reg [2*DATA_WIDTH-1:0] result;
 
     //==================================================
     // Clock
@@ -24,30 +26,36 @@ module testbench;
     //==================================================
     // DUT
     //==================================================
-    rca_adder #(DATA_WIDTH) dut0(
+    rca_mult #(DATA_WIDTH) dut0(
         .clk(clk),
         .enable(enable),
-        .in_sum_a(a),
-        .in_sum_b(b),
-        .out_sum_result(sum),
-        .out_carry(carry)
+        .in_mult_a(a),
+        .in_mult_b(b),
+        .out_mult_result(mult_result)
     );
 
     initial begin
 		$dumpfile("testbench.vcd");
 		$dumpvars(0, testbench);
 
+        $monitor("Time = %0t \ta = %0d \tb = %0d \tmult = %0d", $time, a,b,mult_result);
+
         a = 0;
         b = 0;
+        counter = 0;
 
         reset();
         
         @(posedge clk)
-        for(i = 0; i<10; i = i+1)
+        for(i = 0; i<NUMBER_TESTS; i = i+1)
         begin
-            suma();
-            #(2*CYCLE);
+            mult();
+            #((DATA_WIDTH+1)*CYCLE);
+            if(mult_result == (a*b))
+                counter = counter + 1;
         end
+
+        $monitor("[%0t] Test result: %0d of %0d tests passed...", $time, counter, NUMBER_TESTS);
         
         $finish;
     end
@@ -67,7 +75,7 @@ module testbench;
         end
     endtask 
     
-    task suma;
+    task mult;
     begin
         a <= $urandom%(2**DATA_WIDTH-1); 
         b <= $urandom%(2**DATA_WIDTH-1); 
