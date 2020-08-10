@@ -1,6 +1,7 @@
-module top #( parameter DATA_WIDTH = 32) (
+module top #( parameter DATA_WIDTH = 8) (
     input                           clk,
     input                           resetn,
+    input                           enable,
     input                           in_a,
     input                           in_b,
     output                          out_mult
@@ -33,7 +34,7 @@ module top #( parameter DATA_WIDTH = 32) (
 
     rca_mult #(DATA_WIDTH) dut0(
         .clk(clk),
-        .enable(1'b1),
+        .enable(enable),
         .in_mult_a(in_mult_a),
         .in_mult_b(in_mult_b),
         .out_mult_result(out_mult_result)
