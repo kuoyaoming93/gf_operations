@@ -55,7 +55,7 @@ module testbench;
                 counter = counter + 1;
         end
 
-        $monitor("[%0t] Test result: %0d of %0d tests passed...", $time, counter, NUMBER_TESTS);
+        $display("[%0t] Test result: %0d of %0d tests passed...", $time, counter, NUMBER_TESTS);
         
         $finish;
     end
