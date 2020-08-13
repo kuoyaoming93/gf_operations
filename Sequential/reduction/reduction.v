@@ -1,10 +1,12 @@
 module reduction #(
     parameter DATA_WIDTH = 4
 ) (
+    input clk,
+    input enable,
     input [$clog2(DATA_WIDTH):0]    polyn_grade,        // Orden del polinomio a reducir
     input [DATA_WIDTH:0]            polyn_red_in,       // Polinomio primitivo
     input [2*DATA_WIDTH-1:0]        reduc_in,           // Polinomio a reducir
-    output [DATA_WIDTH-1:0]         out                 // Salida normal
+    output reg [DATA_WIDTH-1:0]     out                 // Salida normal
 );
     //////////////////////////////////////////////////////////
     // Generacion de los operandos
@@ -109,6 +111,13 @@ module reduction #(
     // Salidas
     //////////////////////////////////////////////////////////
 
-    assign out = out_poly;
+    /* Registrar las salidas */
+    always @(posedge clk) begin
+        if(!enable) begin
+            out  <= 0;
+        end else begin 
+            out  <= out_poly;
+        end
+    end 
 
 endmodule
