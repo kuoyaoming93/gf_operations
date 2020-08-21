@@ -45,4 +45,12 @@ module testbench;
         .out(out)
     );
 
+    function [63:0] polym_reduction;
+        input [127:0]   reduc_in;
+        input [64:0]    polyn_red_in;
+        begin
+            
+        end
+    endfunction
+
 endmodule

@@ -3,8 +3,8 @@
 module testbench;
 
     parameter DATA_WIDTH = 32;
-    parameter CYCLE = 5.2;
-    parameter NUMBER_TESTS = 50;
+    parameter CYCLE = 15;
+    parameter NUMBER_TESTS = 100;
     
     wire    [2*DATA_WIDTH-1:0]      mult_result;
     reg     [DATA_WIDTH-1:0]        a;
@@ -50,7 +50,7 @@ module testbench;
         for(i = 0; i<NUMBER_TESTS; i = i+1)
         begin
             mult();
-            #((DATA_WIDTH+1)*CYCLE);
+            #(CYCLE);
             if(mult_result == (a*b))
                 counter = counter + 1;
         end

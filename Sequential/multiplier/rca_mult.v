@@ -1,3 +1,5 @@
+`timescale 1 ns / 1 ps
+
 module rca_mult #(
     parameter DATA_WIDTH = 32
 ) (
@@ -34,12 +36,10 @@ module rca_mult #(
     generate
         for (j = 0; j < DATA_WIDTH-1; j = j + 1) begin
             rca_adder #(DATA_WIDTH) adder0(
-                .clk(clk),
-                .enable(enable),
-                .in_sum_a({carry[j],partial_sum[j][1 +: DATA_WIDTH-1]}),
-                .in_sum_b(partial_products[j+1]),
-                .out_sum_result(partial_sum[j+1]),
-                .out_carry(carry[j+1])
+                .a({carry[j],partial_sum[j][1 +: DATA_WIDTH-1]}),
+                .b(partial_products[j+1]),
+                .sum(partial_sum[j+1]),
+                .co(carry[j+1])
             );
             assign partial_result[j+1] = partial_sum[j+1][0];
         end

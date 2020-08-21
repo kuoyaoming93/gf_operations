@@ -1,4 +1,4 @@
-RTL_SOURCES = ../adder/full_adder.v ../adder/half_adder.v partial_mult.v ../adder/rca_adder.v rca_mult.v ../utils/input_regs.v ../utils/output_regs.v
+RTL_SOURCES = ../adder/full_adder.v ../adder/half_adder.v partial_mult.v rca_adder.v rca_mult.v ../utils/input_regs.v ../utils/output_regs.v
 
 ICARUS_SUFFIX =
 IVERILOG = iverilog$(ICARUS_SUFFIX)
