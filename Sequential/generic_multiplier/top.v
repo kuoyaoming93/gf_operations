@@ -1,8 +1,8 @@
-module top #( parameter DATA_WIDTH = 8) (
+module top #( parameter DATA_WIDTH = 2) (
     input                           clk,
     input                           resetn,
     input                           enable,
-    input                           width,
+    input [$clog2(DATA_WIDTH):0]    in_width,
     input                           in_a,
     input                           in_b,
     output                          out_mult,

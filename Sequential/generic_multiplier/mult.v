@@ -124,7 +124,7 @@ module mult #(
             assign mult_out[i] = (i > 1) ? {partial_carry,{DATA_WIDTH-i{1'b0}},partial_sum[DATA_WIDTH-1:1],partial_result[i-1:0]} : 'b0;
         end
     endgenerate
-    //assign mult_out[DATA_WIDTH] = {partial_carry,partial_sum[DATA_WIDTH-1:1],partial_result};
+    
     assign mult_mux_out = mult_out[in_width];
 
 
