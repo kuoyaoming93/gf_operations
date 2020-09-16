@@ -20,10 +20,7 @@ module red #(
         end
         else begin
             if(count < DATA_WIDTH) begin
-                count       <= count + 1;
-                
-            end
-            else begin 
+                count       <= count + 1;    
             end
             count_d1    <= count;
             count_d2    <= count_d1;
@@ -97,68 +94,70 @@ module red #(
     end
 
     //////////////////////////////////////////////////////////
-    // Modulo de multiplicaciones parciales
-    //////////////////////////////////////////////////////////
-
-    wire [DATA_WIDTH-1:0]   in_partial_mult_a;
-    wire                    in_partial_mult_b;
-    wire [DATA_WIDTH-1:0]   partial_products;
-    reg [DATA_WIDTH-1:0]    partial_products_reg;
-    reg [DATA_WIDTH-1:0]    pp_prev;
-
-    always @(posedge clk) begin
-        if(!count) begin
-            partial_products_reg    <= 0;
-            pp_prev                 <= 0;
-        end
-        else begin
-            partial_products_reg    <= partial_products;
-            pp_prev                 <= partial_products_reg;
-        end
-    end
-
-    assign in_partial_mult_a = poly_red_inv_reg;
-    assign in_partial_mult_b = out_adder_reg[0] ? 1 : 0;
-
-    partial_mult #(DATA_WIDTH) pmult0 (
-        .a(in_partial_mult_a),
-        .b(in_partial_mult_b),
-        .out(partial_products)
-    );
-
-    //////////////////////////////////////////////////////////
     // Modulo de sumas parciales
     //////////////////////////////////////////////////////////
 
     // Module connections
-    wire [DATA_WIDTH-1:0]   in_adder_a;
-    wire [DATA_WIDTH-1:0]   in_adder_b;
-    wire [DATA_WIDTH-1:0]   out_adder_sum;
-    wire                    out_adder_carry;
+    wire [DATA_WIDTH:0]     in_adder_a;
+    wire [DATA_WIDTH:0]     in_adder_b;
+    wire [DATA_WIDTH:0]     out_adder_sum;
+    wire                    bit_selector;
 
     // Registers
-    reg [DATA_WIDTH-1:0]    out_adder_reg;
-    reg                     out_carry_reg;
+    reg [DATA_WIDTH:0]      out_adder_reg;
+    reg [DATA_WIDTH:0]      partial_sum_reg;
 
     always @(posedge clk) begin
-        if (!count_d2) begin
+        if (!count_d1) begin
             out_adder_reg       <= 0;
-            out_carry_reg       <= 0;
+            partial_sum_reg     <= 0;
         end else begin
-            out_adder_reg               <= out_adder_sum;
-            out_carry_reg               <= out_adder_carry;
+            out_adder_reg       <= out_adder_sum;
+            if(count_d2 == polyn_grade-1)
+                partial_sum_reg <= out_adder_sum;
         end
     end
     
-    assign in_adder_a = ;
-    assign in_adder_b = ;
+    assign in_adder_a = (count_d1==1) ? (reduc_inv_reg[0 +: (DATA_WIDTH+1)]) : ({reduc_inv_reg[DATA_WIDTH-1+count_d1],out_adder_reg[1 +: DATA_WIDTH]});
+    assign bit_selector = (count_d1 == 1) ? (reduc_inv_reg[0]) : (out_adder_reg[1]);
+    assign in_adder_b = bit_selector ? poly_red_inv_reg : 0;
 
-    rca_adder #(DATA_WIDTH) adder0(
+    cl_add #(DATA_WIDTH+1) adder0(
         .a(in_adder_a),
         .b(in_adder_b),
-        .sum(out_adder_sum),
-        .co(out_adder_carry)
+        .sum(out_adder_sum)
+    );  
+
+    //////////////////////////////////////////////////////////
+    // Selecciono la salida correcta
+    //////////////////////////////////////////////////////////
+
+    wire [DATA_WIDTH-1:0] poly_mux_out;
+    wire [DATA_WIDTH-1:0] poly_out [0:DATA_WIDTH];
+
+    generate
+        for (i = 0; i <= DATA_WIDTH; i = i + 1) begin           // 0 a 5
+            assign poly_out[i] = (i > 1) ? {partial_sum_reg[i:1],{DATA_WIDTH-i{1'b0}}} : 'b0;
+        end
+    endgenerate
+
+    assign poly_mux_out = poly_out[polyn_grade];
+
+    //////////////////////////////////////////////////////////
+    // Inversion de las salidas - Para reducir el polinomio
+    //////////////////////////////////////////////////////////
+
+    wire [DATA_WIDTH-1:0]       out_poly;       // Salida del polinomio de reduccion
+
+    bit_order_inversion #(DATA_WIDTH) bit_inv_poly_out(
+        .a(poly_mux_out),
+        .a_n(out_poly)
     );
 
+    //////////////////////////////////////////////////////////
+    // Salidas
+    //////////////////////////////////////////////////////////
+
+    assign out = out_poly;
 
 endmodule

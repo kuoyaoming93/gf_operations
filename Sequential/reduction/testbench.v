@@ -53,7 +53,7 @@ module testbench;
         #(20*CYCLE);
         @(negedge clk)
         enable = 0;
-
+/*
         @(negedge clk)
         polyn_grade = 3;
         polyn_red_in = 11;
@@ -72,7 +72,7 @@ module testbench;
 
         #(20*CYCLE);
         @(negedge clk)
-        enable = 0;
+        enable = 0;*/
 
         #15
         $finish;
