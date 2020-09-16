@@ -108,7 +108,7 @@ module red #(
     reg [DATA_WIDTH:0]      partial_sum_reg;
 
     always @(posedge clk) begin
-        if (!count_d1) begin
+        if (!op_enable) begin
             out_adder_reg       <= 0;
             partial_sum_reg     <= 0;
         end else begin
@@ -135,6 +135,8 @@ module red #(
     wire [DATA_WIDTH-1:0] poly_mux_out;
     wire [DATA_WIDTH-1:0] poly_out [0:DATA_WIDTH];
 
+    reg [DATA_WIDTH-1:0]  poly_mux_out_reg;
+
     generate
         for (i = 0; i <= DATA_WIDTH; i = i + 1) begin           // 0 a 5
             assign poly_out[i] = (i > 1) ? {partial_sum_reg[i:1],{DATA_WIDTH-i{1'b0}}} : 'b0;
@@ -143,21 +145,38 @@ module red #(
 
     assign poly_mux_out = poly_out[polyn_grade];
 
+    always @(posedge clk) begin
+        if (!op_enable) begin
+            poly_mux_out_reg    <= 0;
+        end else begin
+            poly_mux_out_reg    <= poly_mux_out;
+        end
+    end
+
     //////////////////////////////////////////////////////////
     // Inversion de las salidas - Para reducir el polinomio
     //////////////////////////////////////////////////////////
 
-    wire [DATA_WIDTH-1:0]       out_poly;       // Salida del polinomio de reduccion
+    wire [DATA_WIDTH-1:0]   out_poly;       // Salida del polinomio de reduccion
+    reg [DATA_WIDTH-1:0]    out_poly_reg; 
 
     bit_order_inversion #(DATA_WIDTH) bit_inv_poly_out(
-        .a(poly_mux_out),
+        .a(poly_mux_out_reg),
         .a_n(out_poly)
     );
+
+    always @(posedge clk) begin
+        if (!op_enable) begin
+            out_poly_reg    <= 0;
+        end else begin
+            out_poly_reg    <= out_poly;
+        end
+    end
 
     //////////////////////////////////////////////////////////
     // Salidas
     //////////////////////////////////////////////////////////
 
-    assign out = out_poly;
+    assign out = out_poly_reg;
 
 endmodule
