@@ -2,7 +2,7 @@
 
 module testbench;
 
-    localparam DATA_WIDTH = 8;
+    localparam DATA_WIDTH = 4;
     parameter CYCLE = 2;
     parameter NUMBER_TESTS = 5000;
     

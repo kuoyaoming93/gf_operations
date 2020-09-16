@@ -6,24 +6,25 @@ module red #(
     input [$clog2(DATA_WIDTH):0]    polyn_grade,        // Orden del polinomio a reducir
     input [DATA_WIDTH:0]            polyn_red_in,       // Polinomio primitivo
     input [2*DATA_WIDTH-1:0]        reduc_in,           // Polinomio a reducir
-    output [DATA_WIDTH-1:0]         out,                // Salida normal
+    output reg [DATA_WIDTH-1:0]     out,                // Salida normal
     output reg                      op_finish
 );
 
-    reg [$clog2(DATA_WIDTH):0] count, count_d1, count_d2;
+    reg [$clog2(DATA_WIDTH):0] count, count_d1, count_d2, count_d3;
 
     always @(posedge clk) begin
         if(!op_enable) begin
             count       <= 0;
             count_d1    <= 0;
             count_d2    <= 0;
+            count_d3    <= 0;
         end
         else begin
-            if(count < DATA_WIDTH) begin
+            if(count < DATA_WIDTH) 
                 count       <= count + 1;    
-            end
             count_d1    <= count;
             count_d2    <= count_d1;
+            count_d3    <= count_d2;
         end
     end
 
@@ -158,25 +159,26 @@ module red #(
     //////////////////////////////////////////////////////////
 
     wire [DATA_WIDTH-1:0]   out_poly;       // Salida del polinomio de reduccion
-    reg [DATA_WIDTH-1:0]    out_poly_reg; 
 
     bit_order_inversion #(DATA_WIDTH) bit_inv_poly_out(
         .a(poly_mux_out_reg),
         .a_n(out_poly)
     );
 
-    always @(posedge clk) begin
-        if (!op_enable) begin
-            out_poly_reg    <= 0;
-        end else begin
-            out_poly_reg    <= out_poly;
-        end
-    end
-
     //////////////////////////////////////////////////////////
     // Salidas
     //////////////////////////////////////////////////////////
 
-    assign out = out_poly_reg;
+    always @(posedge clk) begin
+        if (!op_enable) begin
+            out <= 0;
+            op_finish       <= 0;
+        end else begin
+            out             <= out_poly;
+            if(count_d3 >= polyn_grade) begin
+                op_finish <= 1;
+            end
+        end
+    end
 
 endmodule
