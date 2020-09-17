@@ -2,11 +2,11 @@
 
 module testbench;
 
-    localparam DATA_WIDTH = 4;
+    localparam DATA_WIDTH = 10;
     parameter CYCLE = 2;
     parameter NUMBER_TESTS = 5000;
     
-    wire [DATA_WIDTH-1:0] out;
+    wire [DATA_WIDTH-1:0] out,comb_out;
     reg [DATA_WIDTH:0] polyn_red_in;
     reg [2*DATA_WIDTH-1:0] reduc_in;
     reg [$clog2(DATA_WIDTH):0]    polyn_grade;
@@ -35,6 +35,14 @@ module testbench;
         .op_finish(finish)
     );
 
+    red_test #(DATA_WIDTH) dut1(
+        .polyn_grade(polyn_grade),
+        .polyn_red_in(polyn_red_in),
+        .reduc_in(reduc_in),
+        .out(comb_out)
+    );
+
+
     initial begin
         if ($test$plusargs("vcd")) begin
 			$dumpfile("testbench.vcd");
@@ -53,7 +61,7 @@ module testbench;
         #(20*CYCLE);
         @(negedge clk)
         enable = 0;
-/*
+
         @(negedge clk)
         polyn_grade = 3;
         polyn_red_in = 11;
@@ -72,7 +80,7 @@ module testbench;
 
         #(20*CYCLE);
         @(negedge clk)
-        enable = 0;*/
+        enable = 0;
 
         #15
         $finish;

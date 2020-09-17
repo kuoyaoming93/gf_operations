@@ -1,4 +1,4 @@
-RTL_SOURCES = bit_order_inversion.v cl_add.v partial_mult.v red.v 
+RTL_SOURCES = bit_order_inversion.v cl_add.v partial_mult.v red.v red_test.v
 
 ICARUS_SUFFIX =
 IVERILOG = iverilog$(ICARUS_SUFFIX)
