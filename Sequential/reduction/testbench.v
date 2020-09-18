@@ -88,13 +88,8 @@ module testbench;
 			$dumpvars(0, testbench);
 		end
 
-        
+        // Reset sequential module
         reset();
-
-        //reduc_task();
-        //#(100*CYCLE);
-        //@(negedge clk)
-        //enable = 0;
 
         @(posedge clk)
         for(i = 0; i<NUMBER_TESTS; i = i+1)
