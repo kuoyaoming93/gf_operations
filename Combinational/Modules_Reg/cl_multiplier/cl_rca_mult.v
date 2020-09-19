@@ -15,13 +15,28 @@ module cl_rca_mult #(
     wire [DATA_WIDTH-1:0]   partial_result;
     wire [2*DATA_WIDTH-1:0] out;
 
+    reg [DATA_WIDTH-1:0]          in_a;
+    reg [DATA_WIDTH-1:0]          in_b;
+
+    /* Registrar las salidas */
+    always @(posedge clk) begin
+        if(!enable) begin
+            in_a  <= 0;
+            in_b  <= 0;
+        end else begin 
+            in_a  <= in_mult_a;
+            in_b  <= in_mult_b;
+        end
+    end 
+
+
     /* Creo las multiplicaciones parciales */
     genvar i;
     generate
 		for (i = 0; i < DATA_WIDTH; i = i + 1) begin
             partial_mult #(DATA_WIDTH) pmult0 (
-                .a(in_mult_a),
-                .b(in_mult_b[i]),
+                .a(in_a),
+                .b(in_b[i]),
                 .out(partial_products[i])
             );
 		end
