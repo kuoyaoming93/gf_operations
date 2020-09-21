@@ -9,18 +9,30 @@ module rca_adder #(
     output reg                      out_carry
 );
 
+    reg [DATA_WIDTH-1:0]          in_a;
+    reg [DATA_WIDTH-1:0]          in_b;
+
+    /* Registrar las salidas */
+    always @(posedge clk) begin
+        if(!enable) begin
+            in_a  <= 0;
+            in_b  <= 0;
+        end else begin 
+            in_a  <= in_sum_a;
+            in_b  <= in_sum_b;
+        end
+    end 
+
     wire    [DATA_WIDTH-1:0]    sum;
     wire                        co;
-
     wire    [DATA_WIDTH-1:0]    carry_array;
-    
 
     assign co = carry_array[DATA_WIDTH-1];
 
     /* Creo un half adder */
     half_adder ha0 (
-        .a(in_sum_a[0]), 
-        .b(in_sum_b[0]),
+        .a(in_a[0]), 
+        .b(in_b[0]),
         .sum(sum[0]),
         .co(carry_array[0])
     );
@@ -30,8 +42,8 @@ module rca_adder #(
 	generate
 		for (i = 1; i < DATA_WIDTH; i = i + 1) begin
             full_adder fa0 (
-                .a(in_sum_a[i]), 
-                .b(in_sum_b[i]),
+                .a(in_a[i]), 
+                .b(in_b[i]),
                 .sum(sum[i]),
                 .ci(carry_array[i-1]), 
                 .co(carry_array[i])
