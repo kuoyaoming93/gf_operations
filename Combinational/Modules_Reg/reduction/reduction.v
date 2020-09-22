@@ -13,7 +13,7 @@ module reduction #(
     reg [DATA_WIDTH:0]          in_polyn_red;
     reg [2*DATA_WIDTH-1:0]      in_reduc;
 
-    /* Registrar las salidas */
+    /* Registrar las entradas */
     always @(posedge clk) begin
         if(!enable) begin
             in_polyn_grade  <= 0;

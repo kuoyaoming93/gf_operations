@@ -18,7 +18,7 @@ module cl_rca_mult #(
     reg [DATA_WIDTH-1:0]          in_a;
     reg [DATA_WIDTH-1:0]          in_b;
 
-    /* Registrar las salidas */
+    /* Registrar las entradas */
     always @(posedge clk) begin
         if(!enable) begin
             in_a  <= 0;

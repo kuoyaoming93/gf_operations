@@ -13,7 +13,9 @@ module top #( parameter DATA_WIDTH = 32) (
     input in_a,
     input in_b,
     output out,
-    output out_mult
+    output out_mult,
+    output [DATA_WIDTH-1:0]     out_poly,         
+    output                      sum_carry_out    
 );
 
     wire [DATA_WIDTH-1:0] in_a_parallel;
@@ -86,10 +88,12 @@ module top #( parameter DATA_WIDTH = 32) (
         .polyn_red_in(polyn_red_in),
         .reduc_in(reduc_in),
         
-        .a(in_a_parallel),
-        .b(in_b_parallel),
+        .in_a(in_a_parallel),
+        .in_b(in_b_parallel),
         .out(result_out),
-        .mult_out(out_mult_result)
+        .mult_out(out_mult_result),
+        .out_poly(out_poly),
+        .sum_carry_out(sum_carry_out)
     );
 
 endmodule
