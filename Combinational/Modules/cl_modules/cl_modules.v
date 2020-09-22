@@ -13,7 +13,9 @@ module cl_modules #(
     input [DATA_WIDTH-1:0]          a,                  // Entrada 1
     input [DATA_WIDTH-1:0]          b,                  // Entrada 2
     output [DATA_WIDTH-1:0]         out,                // Salida normal
-    output [2*DATA_WIDTH-1:0]       mult_out            // Salida para la multiplicacion
+    output [DATA_WIDTH-1:0]         out_poly,           // Salida normal
+    output [2*DATA_WIDTH-1:0]       mult_out,           // Salida para la multiplicacion
+    output                          sum_carry_out       // Carry out
 );
 
     //////////////////////////////////////////////////////////
@@ -118,9 +120,10 @@ module cl_modules #(
             // Asigno las entradas de las sumas parciales
             assign a_sum[j] = red_funct ? ({reduc[DATA_WIDTH+1+j],partial_sum[j][1 +: DATA_WIDTH]}) : ((j==0 && sum_funct) ? {1'b0,a} : {1'b0,carry[j],partial_sum[j][1 +: DATA_WIDTH-1]});  
             assign b_sum[j] = red_funct ? ( a_sum[j][0] ? polyn_red : 0) : ((j==0 && sum_funct) ? {1'b0,b} : {1'b0,partial_products[j+1]});  
-            
         end
     endgenerate
+
+    assign sum_carry_out = sum_funct ? carry[1] : 0;
 
     //////////////////////////////////////////////////////////
     // Selecciono la salida correcta
@@ -141,8 +144,6 @@ module cl_modules #(
     // Inversion de las salidas - Para reducir el polinomio
     //////////////////////////////////////////////////////////
 
-    wire [DATA_WIDTH-1:0]       out_poly;       // Salida del polinomio de reduccion
-
     bit_order_inversion #(DATA_WIDTH) bit_inv_poly_out(
         .a(poly_mux_out),
         .a_n(out_poly)
@@ -157,7 +158,6 @@ module cl_modules #(
     assign partial_result[0] = partial_products[0][0];
 
     /* Suma */
-    assign out = red_funct ? out_poly : partial_sum[1];
-
+    assign out = partial_sum[1];
 
 endmodule
