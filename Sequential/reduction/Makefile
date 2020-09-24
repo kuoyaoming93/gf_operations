@@ -1,4 +1,5 @@
-RTL_SOURCES = bit_order_inversion.v cl_add.v partial_mult.v red.v red_test.v cl_full_adder.v cl_half_adder.v cl_rca_adder.v cl_rca_mult.v
+TEST_SOURCES = testmod/red_test.v testmod/cl_full_adder.v testmod/cl_half_adder.v testmod/cl_rca_adder.v testmod/cl_rca_mult.v testmod/partial_mult.v
+RTL_SOURCES = bit_order_inversion.v cl_add.v red.v $(TEST_SOURCES)
 
 ICARUS_SUFFIX =
 IVERILOG = iverilog$(ICARUS_SUFFIX)
