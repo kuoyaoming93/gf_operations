@@ -6,7 +6,7 @@ module red_test #(
     input [$clog2(DATA_WIDTH):0]    polyn_grade,        // Orden del polinomio a reducir
     input [DATA_WIDTH:0]            polyn_red_in,       // Polinomio primitivo
     input [2*DATA_WIDTH-1:0]        reduc_in,           // Polinomio a reducir
-    output reg[DATA_WIDTH-1:0]      out                 // Salida normal
+    output reg [DATA_WIDTH-1:0]     out                 // Salida normal
 );
     reg [$clog2(DATA_WIDTH):0]  in_polyn_grade;
     reg [DATA_WIDTH:0]          in_polyn_red;
