@@ -17,7 +17,6 @@ module top #( parameter DATA_WIDTH = 32) (
 
     output out_sum,
     output out_mult_result,
-    output out_cl_mult_result,
     output out_poly,
     output out_poly_c,
     output out_sum_c,
@@ -29,7 +28,6 @@ module top #( parameter DATA_WIDTH = 32) (
     wire [DATA_WIDTH-1:0]           in_b_p;
     wire [DATA_WIDTH-1:0]           out_sum_p;
     wire [2*DATA_WIDTH-1:0]         out_mult_p;
-    wire [2*DATA_WIDTH-1:0]         out_cl_mult_p;
 
     wire [$clog2(DATA_WIDTH):0]     polyn_grade_p;
     wire [DATA_WIDTH:0]             polyn_red_in_p;       
@@ -93,35 +91,28 @@ module top #( parameter DATA_WIDTH = 32) (
         .out_serial(out_mult_result)
     );
 
-    output_regs #(2*DATA_WIDTH) output2 (
-        .clk(clk),
-        .resetn(resetn),
-        .in_parallel(out_cl_mult_p),
-        .out_serial(out_cl_mult_result)
-    );
-
-    output_regs #(DATA_WIDTH) output3 (
+    output_regs #(DATA_WIDTH) output2 (
         .clk(clk),
         .resetn(resetn),
         .in_parallel(out_poly_p),
         .out_serial(out_poly)
     );
 
-    output_regs #(DATA_WIDTH) output4 (
+    output_regs #(DATA_WIDTH) output3 (
         .clk(clk),
         .resetn(resetn),
         .in_parallel(out_sum_c_p),
         .out_serial(out_sum_c)
     );
 
-    output_regs #(DATA_WIDTH) output5 (
+    output_regs #(DATA_WIDTH) output4 (
         .clk(clk),
         .resetn(resetn),
         .in_parallel(out_poly_c_p),
         .out_serial(out_poly_c)
     );
 
-    output_regs #(2*DATA_WIDTH) output6 (
+    output_regs #(2*DATA_WIDTH) output5 (
         .clk(clk),
         .resetn(resetn),
         .in_parallel(out_mult_c_p),
@@ -144,14 +135,7 @@ module top #( parameter DATA_WIDTH = 32) (
     cl_rca_mult #(DATA_WIDTH) cl_mult0 (
         .clk(clk),
         .enable(enable),
-        .in_mult_a(in_a_p),
-        .in_mult_b(in_b_p),
-        .out_mult_result(out_cl_mult_p)
-    );
-
-    rca_mult #(DATA_WIDTH) mult0(
-        .clk(clk),
-        .enable(enable),
+        .carry_option(carry_option),
         .in_mult_a(in_a_p),
         .in_mult_b(in_b_p),
         .out_mult_result(out_mult_p)

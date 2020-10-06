@@ -1,0 +1,221 @@
+module cl_modules #(
+    parameter DATA_WIDTH = 32
+) (
+    input                           clk,
+    input                           enable,
+    input                           sum_funct,          // Modo Suma
+    input                           exp_funct,          // Modo Exponencial (al cuadrado)
+    input                           red_funct,          // Modo Polinomio de reduccion
+    input                           carry_option,       // Carry o Carry-Less
+
+    input [$clog2(DATA_WIDTH):0]    polyn_grade,        // Orden del polinomio a reducir
+    input [DATA_WIDTH:0]            polyn_red_in,       // Polinomio primitivo
+    input [2*DATA_WIDTH-1:0]        reduc_in,           // Polinomio a reducir
+
+    input [DATA_WIDTH-1:0]          in_a,                  // Entrada 1
+    input [DATA_WIDTH-1:0]          in_b,                  // Entrada 2
+
+    output reg [DATA_WIDTH-1:0]     out,                // Salida normal
+    output reg [DATA_WIDTH-1:0]     out_poly,           // Salida normal
+    output reg [2*DATA_WIDTH-1:0]   mult_out,           // Salida para la multiplicacion
+    output reg                      sum_carry_out       // Carry out
+);
+
+    reg                         sum_funct_reg;          
+    reg                         exp_funct_reg;          
+    reg                         red_funct_reg;          
+    reg                         carry_option_reg;       
+
+    reg [$clog2(DATA_WIDTH):0]  polyn_grade_reg;        
+    reg [DATA_WIDTH:0]          polyn_red_in_reg;       
+    reg [2*DATA_WIDTH-1:0]      reduc_in_reg;          
+
+    reg [DATA_WIDTH-1:0]        in_a_reg;                 
+    reg [DATA_WIDTH-1:0]        in_b_reg;              
+
+
+    /* Registrar las entradas */
+
+    always @(posedge clk) begin
+        if(!enable) begin
+            sum_funct_reg       <= 0;
+            exp_funct_reg       <= 0;
+            red_funct_reg       <= 0;
+            carry_option_reg    <= 0;
+
+            polyn_grade_reg     <= 0;
+            polyn_red_in_reg    <= 0;
+            reduc_in_reg        <= 0;
+
+            in_a_reg            <= 0;
+            in_b_reg            <= 0;
+        end else begin 
+            sum_funct_reg       <= sum_funct;
+            exp_funct_reg       <= exp_funct;
+            red_funct_reg       <= red_funct;
+            carry_option_reg    <= carry_option;
+
+            polyn_grade_reg     <= polyn_grade;
+            polyn_red_in_reg    <= polyn_red_in;
+            reduc_in_reg        <= reduc_in;
+
+            in_a_reg            <= in_a;
+            in_b_reg            <= in_b;
+        end
+    end     
+
+    //////////////////////////////////////////////////////////
+    // Generacion de los operandos
+    //////////////////////////////////////////////////////////
+
+    wire [DATA_WIDTH:0]         polyn_red_op [0:DATA_WIDTH];
+    wire [DATA_WIDTH:0]         polyn_red_op_out;
+    wire [2*DATA_WIDTH-1:0]     reduc_op [0:DATA_WIDTH];
+    wire [2*DATA_WIDTH-1:0]     reduc_op_out;
+
+    /* Creo N conexiones, customizando para operar con cualquier grado de polinomio primitivo */
+    genvar i;
+    generate
+        for (i = 0; i <= DATA_WIDTH; i = i + 1) begin
+            assign polyn_red_op[i] =    (i > 1) ? {polyn_red_in_reg[i:0],{DATA_WIDTH-i{1'b0}}} : 'b0;
+            assign reduc_op[i] =        (i > 1) ? {reduc_in_reg[(2*i)-1:0],{(2*(DATA_WIDTH-i)){1'b0}}} : 'b0;
+        end
+    endgenerate
+
+    assign polyn_red_op_out = polyn_red_op[polyn_grade_reg];
+    assign reduc_op_out = reduc_op[polyn_grade_reg];
+
+    //////////////////////////////////////////////////////////
+    // Inversion de las entradas - Para reducir el polinomio
+    //////////////////////////////////////////////////////////
+
+    wire [2*DATA_WIDTH-1:0]     reduc_in_n;         // Polinomio a reducir invertido
+    wire [DATA_WIDTH:0]         polyn_red_in_n;     // Polinomio primitivo invertido
+
+    wire [2*DATA_WIDTH-1:0]     reduc;              // Salidas para la siguiente etapa
+    wire [DATA_WIDTH:0]         polyn_red;
+
+    bit_order_inversion #(2*DATA_WIDTH) bit_inv_reduc(
+        .a(reduc_op_out),
+        .a_n(reduc_in_n)
+    );
+    bit_order_inversion #(DATA_WIDTH+1) bit_inv_polym(
+        .a(polyn_red_op_out),
+        .a_n(polyn_red_in_n)
+    );
+
+    // Invierto o no las entradas dependiendo si es polinomio de reduccion o no
+    assign reduc =      red_funct_reg ? reduc_in_n : reduc_op_out;
+    assign polyn_red =  red_funct_reg ? polyn_red_in_n : polyn_red_op_out;
+
+
+    //////////////////////////////////////////////////////////
+    // Multiplicaciones parciales
+    //////////////////////////////////////////////////////////
+    
+    wire [DATA_WIDTH-1:0]   partial_products      [0:DATA_WIDTH-1];
+    wire [DATA_WIDTH-1:0]   partial_multiplier;                    
+    
+    generate
+		for (i = 0; i < DATA_WIDTH; i = i + 1) begin
+            partial_mult #(DATA_WIDTH) pmult0 (
+                .a(in_a_reg),
+                .b(partial_multiplier[i]),
+                .out(partial_products[i])
+            );
+
+            assign partial_multiplier[i] = exp_funct_reg ? in_a_reg[i] : in_b_reg[i];
+		end
+	endgenerate 
+
+    //////////////////////////////////////////////////////////
+    // Sumas parciales
+    //////////////////////////////////////////////////////////
+
+    wire [DATA_WIDTH:0]     partial_sum [0:DATA_WIDTH-1];
+    wire [DATA_WIDTH-1:0]   carry;
+    wire [DATA_WIDTH-1:0]   partial_result;
+
+    wire [DATA_WIDTH:0]     a_sum [0:DATA_WIDTH-2];
+    wire [DATA_WIDTH:0]     b_sum [0:DATA_WIDTH-2];
+    wire                    sum_carry;
+
+    // No hay carry en la primera suma parcial
+    assign carry[0] = 1'b0;
+
+    // La primera suma parcial de la multiplicacion es el primer producto parcial
+    // La primera suma parcial del modulo de reduccion es el la primera parte del polinomio a reducir
+    assign partial_sum[0] = red_funct_reg ? reduc[0 +: (DATA_WIDTH+1)] : {1'b0,partial_products[0]};
+    
+
+    /* Creo los N adders de N bits de ancho */
+    genvar j;
+    generate
+        for (j = 0; j < DATA_WIDTH-1; j = j + 1) begin
+            cl_rca_adder #(DATA_WIDTH) adder0(
+                .carry_option(carry_option_reg),
+                .a(a_sum[j][0 +: DATA_WIDTH]),
+                .b(b_sum[j][0 +: DATA_WIDTH]),
+                .sum(partial_sum[j+1][0 +: DATA_WIDTH]),
+                .co(carry[j+1])
+            );
+            // Suma adicional que necesita el polinomio de reduccion
+            assign partial_sum[j+1][DATA_WIDTH] = a_sum[j][DATA_WIDTH] ^ b_sum[j][DATA_WIDTH];
+
+            assign partial_result[j+1] = partial_sum[j+1][0];
+
+            // Asigno las entradas de las sumas parciales
+            assign a_sum[j] = red_funct_reg ? ({reduc[DATA_WIDTH+1+j],partial_sum[j][1 +: DATA_WIDTH]}) : ((j==0 && sum_funct_reg) ? {1'b0,in_a_reg} : {1'b0,carry[j],partial_sum[j][1 +: DATA_WIDTH-1]});  
+            assign b_sum[j] = red_funct_reg ? ( a_sum[j][0] ? polyn_red : 0) : ((j==0 && sum_funct_reg) ? {1'b0,in_b_reg} : {1'b0,partial_products[j+1]});  
+        end
+    endgenerate
+
+    assign sum_carry = sum_funct_reg ? carry[1] : 0;
+
+    //////////////////////////////////////////////////////////
+    // Selecciono la salida correcta
+    //////////////////////////////////////////////////////////
+
+    wire [DATA_WIDTH-1:0] poly_mux_out;
+    wire [DATA_WIDTH-1:0] poly_out [0:DATA_WIDTH];
+
+    generate
+        for (i = 0; i <= DATA_WIDTH; i = i + 1) begin           // 0 a 5
+            assign poly_out[i] = (i > 1) ? {partial_sum[i-1][i:1],{DATA_WIDTH-i{1'b0}}} : 'b0;
+        end
+    endgenerate
+
+    assign poly_mux_out = poly_out[polyn_grade_reg];
+
+    //////////////////////////////////////////////////////////
+    // Inversion de las salidas - Para reducir el polinomio
+    //////////////////////////////////////////////////////////
+
+    wire [DATA_WIDTH-1:0]     out_polyn;
+    bit_order_inversion #(DATA_WIDTH) bit_inv_poly_out(
+        .a(poly_mux_out),
+        .a_n(out_polyn)
+    );
+
+    //////////////////////////////////////////////////////////
+    // Salidas
+    //////////////////////////////////////////////////////////
+
+    assign partial_result[0] = partial_products[0][0];
+
+    /* Registrar las salidas */
+    always @(posedge clk) begin
+        if(!enable) begin
+            out             <= 0;
+            mult_out        <= 0;
+            out_poly        <= 0;
+            sum_carry_out   <= 0;
+        end else begin 
+            out             <= partial_sum[1];
+            mult_out        <= {carry[DATA_WIDTH-1],partial_sum[DATA_WIDTH-1][DATA_WIDTH-1:1],partial_result};
+            out_poly        <= out_polyn;
+            sum_carry_out   <= sum_carry;
+        end
+    end 
+
+endmodule
