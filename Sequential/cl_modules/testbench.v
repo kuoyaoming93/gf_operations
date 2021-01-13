@@ -5,7 +5,7 @@ module testbench;
     parameter DATA_WIDTH = 32;
     parameter MAX_GF = 16;
     parameter CYCLE = 2;
-    parameter NUMBER_TESTS = 1000;
+    parameter NUMBER_TESTS = 100;
     
     reg                             clk,enable;
     reg                             sum_funct, exp_funct, red_funct, carry_option;
@@ -109,7 +109,7 @@ module testbench;
         @(posedge clk)
         for(i = 0; i<NUMBER_TESTS; i = i+1)
         begin
-            rand_funct = 4;//$urandom%(5); 
+            rand_funct = $urandom%(5); 
             if(rand_funct == 0) 
                 add();
             if(rand_funct == 1) 

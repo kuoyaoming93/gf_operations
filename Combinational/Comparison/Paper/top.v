@@ -15,10 +15,10 @@ module top #( parameter DATA_WIDTH = 32) (
     input polyn_red_in,   
     input reduc_in,
 
-    output out_sum,
+    /*output out_sum,
     output out_mult_result,
-    output out_cl_mult_result,
-    output out_poly,
+    output out_cl_mult_result,*/
+    //output out_poly,
     output out_poly_c,
     output out_sum_c,
     output out_carry_c,
@@ -27,14 +27,14 @@ module top #( parameter DATA_WIDTH = 32) (
 
     wire [DATA_WIDTH-1:0]           in_a_p;
     wire [DATA_WIDTH-1:0]           in_b_p;
-    wire [DATA_WIDTH-1:0]           out_sum_p;
+  /*  wire [DATA_WIDTH-1:0]           out_sum_p;
     wire [2*DATA_WIDTH-1:0]         out_mult_p;
-    wire [2*DATA_WIDTH-1:0]         out_cl_mult_p;
+    wire [2*DATA_WIDTH-1:0]         out_cl_mult_p;*/
 
     wire [$clog2(DATA_WIDTH):0]     polyn_grade_p;
     wire [DATA_WIDTH:0]             polyn_red_in_p;       
     wire [2*DATA_WIDTH-1:0]         reduc_in_p;           
-    wire [DATA_WIDTH-1:0]           out_poly_p;         
+    //wire [DATA_WIDTH-1:0]           out_poly_p;         
 
     wire [DATA_WIDTH-1:0]           out_sum_c_p; 
     wire [DATA_WIDTH-1:0]           out_poly_c_p;     
@@ -78,7 +78,7 @@ module top #( parameter DATA_WIDTH = 32) (
         .in_serial(reduc_in),
         .out_parallel(reduc_in_p)
     ); 
-
+/*
     output_regs #(DATA_WIDTH) output0 (
         .clk(clk),
         .resetn(resetn),
@@ -99,13 +99,13 @@ module top #( parameter DATA_WIDTH = 32) (
         .in_parallel(out_cl_mult_p),
         .out_serial(out_cl_mult_result)
     );
-
-    output_regs #(DATA_WIDTH) output3 (
+*/
+   /* output_regs #(DATA_WIDTH) output3 (
         .clk(clk),
         .resetn(resetn),
         .in_parallel(out_poly_p),
         .out_serial(out_poly)
-    );
+    );*/
 
     output_regs #(DATA_WIDTH) output4 (
         .clk(clk),
@@ -131,7 +131,7 @@ module top #( parameter DATA_WIDTH = 32) (
     //==================================================
     // Modules
     //==================================================
-
+/*
     rca_adder #(DATA_WIDTH) adder0 (
         .clk(clk),
         .enable(enable),
@@ -156,15 +156,15 @@ module top #( parameter DATA_WIDTH = 32) (
         .in_mult_b(in_b_p),
         .out_mult_result(out_mult_p)
     );
-
-    red_test #(DATA_WIDTH) red0 (
+*/
+    /*red_test #(DATA_WIDTH) red0 (
         .clk(clk),
         .enable(enable),
         .polyn_grade(polyn_grade_p),
         .polyn_red_in(polyn_red_in_p),
         .reduc_in(reduc_in_p),
         .out(out_poly_p)
-    );
+    );*/
 
     cl_modules #(DATA_WIDTH) comp0 (
         .clk(clk),
